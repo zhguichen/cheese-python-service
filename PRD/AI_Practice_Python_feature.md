@@ -99,7 +99,7 @@ Response:
                 "type": "single_choice",
                 "isCorrect": true,
                 "userAnswer": { "selectedOptionId": "b" },
-                "correctAnswer": { "optionId": "b" },
+                "correctAnswer": { "optionId": "b", "text": "正确选项的文本" },
                 "parsing": "LLM生成的解析"
             },
             {

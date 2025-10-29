@@ -197,7 +197,7 @@ curl -X POST http://localhost:8001/internal/ai/practice/verify \
         "type": "single_choice",
         "isCorrect": true,
         "userAnswer": { "selectedOptionId": "b" },
-        "correctAnswer": { "optionId": "b" },
+        "correctAnswer": { "optionId": "b", "text": "正确选项的文本" },
         "parsing": "详细的解析说明..."
       },
       {
