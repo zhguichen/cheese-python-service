@@ -30,7 +30,7 @@ Content-Type: application/json
     {
       "questionId": "1",
       "type": "single_choice",
-      "answer": "C"
+      "answer": "c"
     },
     {
       "questionId": "2",
@@ -58,7 +58,7 @@ Content-Type: application/json
     {
       "questionId": "1",
       "type": "single_choice",
-      "answer": "A"
+      "answer": "a"
     },
     {
       "questionId": "2",

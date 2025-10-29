@@ -48,8 +48,7 @@
       "type": "single_choice",
       "isCorrect": true,
       "correctAnswer": {
-        "optionId": "b",
-        "text": "正确选项的文本内容"
+        "optionId": "b"
       },
       "parsing": "简洁的解析说明"
     },
@@ -80,7 +79,7 @@
 2. isCorrect是布尔值（true或false），不要用字符串
 3. parsing应该是一段完整的解析文字，包含正确答案和解释
 4. correctAnswer 字段必须根据题目类型提供：
-   - 单选题：提供 optionId（如"a"、"b"、"c"、"d"）和该选项的文本内容
+   - 单选题：只提供 optionId（如"a"、"b"、"c"、"d"）
    - 简答题：提供参考答案的文本
    - 代码题：提供参考代码或空字符串
 5. 对于代码题，如果答案基本正确但有小瑕疵，也可以判定为正确，但在解析中指出可以改进的地方

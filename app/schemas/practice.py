@@ -98,7 +98,6 @@ class SingleChoiceCorrectAnswer(BaseModel):
     """单选题正确答案"""
 
     optionId: str = Field(..., description="正确选项ID")
-    text: str = Field(..., description="正确选项文本")
 
 
 class TextUserAnswer(BaseModel):
