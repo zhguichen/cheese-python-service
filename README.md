@@ -23,7 +23,9 @@ AI 练一练服务 - 使用 OpenAI API 生成和验证练习题的 Python 微服
 python-service/
 ├── app/                           # 核心应用代码包
 │   ├── api/                       # API 接口定义和路由管理
-│   │   └── practice.py            # 练习题相关路由
+│   │   ├── endpoints/             # 子路由模块
+│   │   │   └── practice.py        # 练习题相关路由
+│   │   └── router.py              # 路由聚合入口
 │   ├── core/                      # 基础配置、安全、工具和通用模块
 │   │   └── config.py              # 配置管理
 │   ├── services/                  # 核心业务逻辑和 AI 厂商接口
