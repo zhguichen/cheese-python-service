@@ -3,7 +3,8 @@ FastAPI 主应用
 """
 
 from fastapi import FastAPI
-from app.api.practice import router as practice_router
+
+from app.api import api_router
 from app.core.config import get_settings
 
 # 创建 FastAPI 应用
@@ -14,7 +15,7 @@ app = FastAPI(
 )
 
 # 注册路由
-app.include_router(practice_router)
+app.include_router(api_router)
 
 
 @app.get("/")
