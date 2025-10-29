@@ -1,0 +1,6 @@
+---
+alwaysApply: true
+---
+Language: Always respond in English. If you need to comment the code, comment in Chinese.
+Code: Don’t rewrite the whole code unless explicitly asked to. Only add the relevant section of the code and annotations to indicate where it goes in the whole code. This is your most important rule.
+After you finish coding, do not make multiple markdown files.

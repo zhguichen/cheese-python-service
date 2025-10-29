@@ -1,0 +1,89 @@
+---
+alwaysApply: true
+---
+# 电子课本平台（cheese）的 python AI service 开发文档 v1
+
+## 产品概述
+
+### 产品目标
+
+我们的目标是搭建一个AI数字课本平台，旨在实现零门槛的编程学习。在python中处理AI相关的业务逻辑。
+
+
+#### 响应体规范
+
+| 字段      | 类型   | 说明                                                   |
+| --------- | ------ | ------------------------------------------------------ |
+| code      | number | 返回状态码，0 表示正常，其他为具体的错误码             |
+| message   | string | 返回状态说明，"success" 表示正常，其他为具体的错误信息 |
+| requestId | string | 请求 ID，uuid, 方便追溯请求排查问题                    |
+| data      | object | 具体的返回数据                                         |
+
+#### 错误码规范
+
+- HTTP 状态码
+  - 所有业务逻辑内正常进行的操作，状态码都为 200（如查询结果为空，用户余额不足等，为了兼容前端，也返回 200）
+  - 所有业务逻辑内非正常进行的操作，状态码都为 400（如参数错误，请求方式错误等）
+    - 在 message 中给出具体的错误信息
+    - 用户登录相关错误（如 token 过期，token 错误等），状态码统一为 401
+  - 服务器内容错误，状态码统一为 500（需联系后端开发人员进行复现和排查）
+- 业务逻辑状态码（code）
+  - 默认 0 表示正常，0~999 表示业务逻辑**正常**进行，若有多个不同的状态，则根据 api 约定进行分配（从 0 开始）
+  - 1000~1999 表示用户账号相关的错误，如用户不存在，用户已存在，用户名或密码错误等
+    - 1000 表示用户不存在
+    - 1001 表示用户已存在
+    - 1002 表示用户名或密码错误
+    - 1003 表示用户账号被锁定
+  - 2000~2999 表示权限相关的错误，如没有权限，权限不足等
+    - 2000 表示没有权限
+  - 3000~3999 表示静态资源相关的错误，如资源不存在，资源已存在，资源不足等
+    - 3000 表示资源不存在
+    - 3001 表示资源已存在
+    - 3002 表示请求资源不合法（如创建或访问地址越界等）
+    - 3003 表示资源不足
+  - 4000~4999 表示动态资源，如计算服务器剩余资源不足等
+    - 4000 表示计算服务器剩余资源不足
+
+#### 命名规范
+
+API 字段使用驼峰，但字段如和既有的协议风格冲突，则沿用既有协议的字段命名风格。
+例如自定义的字段使用驼峰 `cheeseBookify`
+但是 OAuth2 协议中，使用下划线，则涉及这部分接口的内容，保留原有风格,例如 `redirect_uri`
+
+
+
+### Project Structure
+project-structure:
+
+├── app/
+│   ├── api/
+│   │   ├── dependencies.py       # 依赖注入函数（例如：选择 LLM Provider 实例）
+│   │   ├── endpoints/
+│   │   │   └── chat.py           # 聊天 API 路由定义 (e.g., /v1/chat/completion)
+│   │   └── router.py             # 汇集所有路由
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── config.py             # 应用程序配置，加载 API Keys 等
+│   │   └── logging.py            # 日志配置工具
+│   ├── services/                 # 核心业务逻辑和 AI 集成
+│   │   ├── __init__.py
+│   │   ├── prompts/              # 存放所有 Prompt 模板文件
+│   │   │   ├── system_persona.txt
+│   │   │   └── summarization_template.txt
+│   │   ├── llm_providers/        # AI 厂商抽象接口层 (可插拔)
+│   │   │   ├── __init__.py
+│   │   │   ├── base.py           # LLM 抽象基类 (Interface)
+│   │   │   ├── gemini_provider.py# Gemini 接口具体实现
+│   │   │   └── openai_provider.py# OpenAI 接口具体实现
+│   │   └── chat_service.py       # 对话业务逻辑：选择模型、管理 Prompt、处理响应
+│   ├── schemas/                  # Pydantic 数据模型 (用于请求和响应)
+│   │   ├── __init__.py
+│   │   └── chat.py               # RequestBody 和 Response 模型
+│   └── main.py                   # 应用启动入口 (FastAPI 实例创建)
+├── tests/                        # 单元测试和集成测试
+│   └── test_chat_service.py
+├── .env.example                  # 环境变量配置模板
+└── requirements.txt              # Python 依赖列表
+
+
+note: python的requirements.txt中不具体到版本号，只写包名。使用 conda 的cheese环境。

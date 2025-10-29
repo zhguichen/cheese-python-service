@@ -1,0 +1,100 @@
+### 测试服务健康检查
+GET http://localhost:8001/health
+Content-Type: application/json
+
+###
+
+### 测试生成练习题 - Python 基础示例
+POST http://localhost:8001/internal/ai/practice/generate
+Content-Type: application/json
+
+{
+  "sessionId": "session_001",
+  "userId": "user_001",
+  "sectionId": "section_001",
+  "bookName": "Python编程入门",
+  "bookIntroduction": "本书是一本面向编程初学者的Python教程，通过大量实例循序渐进地介绍Python编程的基础知识。",
+  "sectionContent": "# Python 变量和数据类型\n\n## 变量的定义\n\n在Python中，变量不需要声明类型，直接赋值即可创建变量。例如：\n\n```python\nname = \"Alice\"\nage = 25\nheight = 1.68\nis_student = True\n```\n\n## 基本数据类型\n\nPython有以下几种基本数据类型：\n\n1. **整数 (int)**: 如 10, -5, 0\n2. **浮点数 (float)**: 如 3.14, -0.5, 2.0\n3. **字符串 (str)**: 如 \"hello\", 'world'\n4. **布尔值 (bool)**: True 或 False\n\n## 类型转换\n\n可以使用内置函数进行类型转换：\n\n```python\n# 转换为整数\nnum = int(\"123\")  # 结果为 123\n\n# 转换为字符串\ntext = str(456)   # 结果为 \"456\"\n\n# 转换为浮点数\nprice = float(\"9.99\")  # 结果为 9.99\n```"
+}
+
+###
+
+### 测试验证练习题答案 - 单选题正确答案
+POST http://localhost:8001/internal/ai/practice/verify
+Content-Type: application/json
+
+{
+  "sessionId": "session_001",
+  "userId": "user_001",
+  "sectionId": "section_001",
+  "questions": [
+    {
+      "questionId": "1",
+      "type": "single_choice",
+      "content": "在Python中，以下哪个不是基本数据类型？\nA. int\nB. float\nC. array\nD. str",
+      "answer": "C"
+    },
+    {
+      "questionId": "2",
+      "type": "short_answer",
+      "content": "请简要说明Python中变量命名的基本规则。",
+      "answer": "Python变量命名规则：1. 只能包含字母、数字和下划线；2. 不能以数字开头；3. 不能使用Python关键字；4. 建议使用小写字母和下划线的组合，如my_variable。"
+    },
+    {
+      "questionId": "3",
+      "type": "code",
+      "content": "编写一个Python程序，定义三个变量分别存储你的姓名、年龄和身高，然后打印输出这些信息。",
+      "answer": "name = \"张三\"\nage = 20\nheight = 1.75\nprint(f\"姓名：{name}\")\nprint(f\"年龄：{age}\")\nprint(f\"身高：{height}米\")"
+    }
+  ]
+}
+
+###
+
+### 测试验证练习题答案 - 包含错误答案
+POST http://localhost:8001/internal/ai/practice/verify
+Content-Type: application/json
+
+{
+  "sessionId": "session_002",
+  "userId": "user_002",
+  "sectionId": "section_001",
+  "questions": [
+    {
+      "questionId": "1",
+      "type": "single_choice",
+      "content": "Python中用什么关键字定义变量？\nA. var\nB. let\nC. 不需要关键字\nD. define",
+      "answer": "A"
+    },
+    {
+      "questionId": "2",
+      "type": "short_answer",
+      "content": "什么是类型转换？请举例说明。",
+      "answer": "类型转换就是把一个东西变成另一个东西。"
+    },
+    {
+      "questionId": "3",
+      "type": "code",
+      "content": "编写代码将字符串\"123\"转换为整数。",
+      "answer": "num = \"123\"\nresult = num + 0"
+    }
+  ]
+}
+
+###
+
+### 测试生成练习题 - 列表和循环章节
+POST http://localhost:8001/internal/ai/practice/generate
+Content-Type: application/json
+
+{
+  "sessionId": "session_003",
+  "userId": "user_003",
+  "sectionId": "section_002",
+  "bookName": "Python编程进阶",
+  "bookIntroduction": "深入学习Python的数据结构和控制流程。",
+  "sectionContent": "# Python 列表和循环\n\n## 列表的基本操作\n\n列表是Python中最常用的数据结构之一：\n\n```python\n# 创建列表\nfruits = [\"apple\", \"banana\", \"orange\"]\n\n# 访问元素\nprint(fruits[0])  # apple\n\n# 添加元素\nfruits.append(\"grape\")\n\n# 列表长度\nprint(len(fruits))  # 4\n```\n\n## for 循环\n\n使用for循环遍历列表：\n\n```python\nfor fruit in fruits:\n    print(fruit)\n\n# 使用range函数\nfor i in range(5):\n    print(i)  # 输出 0 到 4\n```"
+}
+
+###
+
