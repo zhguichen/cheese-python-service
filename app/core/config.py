@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     """应用配置类"""
 
     # OpenAI 配置
-    OPENAI_API_KEY: str = "sk-e2ec06f5a4f24d40aea98f56aaf8efea"
+    OPENAI_API_KEY: str = "sk-fd03056d6baf438280b9d63479c55677"
     OPENAI_BASE_URL: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
     OPENAI_MODEL: str = "qwen-flash"
 

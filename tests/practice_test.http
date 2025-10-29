@@ -31,19 +31,16 @@ Content-Type: application/json
     {
       "questionId": "1",
       "type": "single_choice",
-      "content": "在Python中，以下哪个不是基本数据类型？\nA. int\nB. float\nC. array\nD. str",
       "answer": "C"
     },
     {
       "questionId": "2",
       "type": "short_answer",
-      "content": "请简要说明Python中变量命名的基本规则。",
       "answer": "Python变量命名规则：1. 只能包含字母、数字和下划线；2. 不能以数字开头；3. 不能使用Python关键字；4. 建议使用小写字母和下划线的组合，如my_variable。"
     },
     {
       "questionId": "3",
       "type": "code",
-      "content": "编写一个Python程序，定义三个变量分别存储你的姓名、年龄和身高，然后打印输出这些信息。",
       "answer": "name = \"张三\"\nage = 20\nheight = 1.75\nprint(f\"姓名：{name}\")\nprint(f\"年龄：{age}\")\nprint(f\"身高：{height}米\")"
     }
   ]
@@ -63,19 +60,16 @@ Content-Type: application/json
     {
       "questionId": "1",
       "type": "single_choice",
-      "content": "Python中用什么关键字定义变量？\nA. var\nB. let\nC. 不需要关键字\nD. define",
       "answer": "A"
     },
     {
       "questionId": "2",
       "type": "short_answer",
-      "content": "什么是类型转换？请举例说明。",
       "answer": "类型转换就是把一个东西变成另一个东西。"
     },
     {
       "questionId": "3",
       "type": "code",
-      "content": "编写代码将字符串\"123\"转换为整数。",
       "answer": "num = \"123\"\nresult = num + 0"
     }
   ]
@@ -97,4 +91,3 @@ Content-Type: application/json
 }
 
 ###
-

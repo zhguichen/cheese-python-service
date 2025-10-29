@@ -8,7 +8,7 @@ import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 def _utc_timestamp() -> str:
@@ -88,6 +88,94 @@ class SessionLogger:
         with session_file.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(event_payload, ensure_ascii=False) + "\n")
 
+    def load_latest_generate_payload(
+        self, context: SessionLogContext
+    ) -> Dict[str, Any]:
+        """
+        查找会话日志中最近一次生成事件的数据。
+
+        Args:
+            context: 会话上下文
+
+        Returns:
+            生成事件的数据字典（包含summary和questions）
+
+        Raises:
+            FileNotFoundError: 会话日志不存在
+            ValueError: 日志中没有题目信息或格式异常
+        """
+        session_file = self._session_file(context)
+        if not session_file.exists():
+            raise FileNotFoundError(f"会话日志不存在: {session_file}")
+
+        latest_data: Optional[Dict[str, Any]] = None
+
+        with session_file.open("r", encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    payload = json.loads(line)
+                except json.JSONDecodeError as exc:
+                    raise ValueError(f"会话日志格式错误: {session_file}") from exc
+
+                if payload.get("event_type") != "generate":
+                    continue
+
+                data = payload.get("data")
+                if isinstance(data, dict):
+                    latest_data = data
+
+        if latest_data is None:
+            raise ValueError("未找到生成题目的日志记录")
+
+        return latest_data
+
+    def load_latest_generated_questions(
+        self, context: SessionLogContext
+    ) -> List[Dict[str, Any]]:
+        """返回最近一次生成事件的题目列表。"""
+        data = self.load_latest_generate_payload(context)
+        questions = data.get("questions")
+        if not isinstance(questions, list):
+            raise ValueError("生成日志缺少题目列表")
+        return questions
+
+    def load_meta(self, context: SessionLogContext) -> Dict[str, Any]:
+        """
+        读取会话的元信息。
+
+        Args:
+            context: 会话上下文
+
+        Returns:
+            元信息字典
+
+        Raises:
+            FileNotFoundError: 会话日志不存在
+            ValueError: 元信息缺失或格式异常
+        """
+        session_file = self._session_file(context)
+        if not session_file.exists():
+            raise FileNotFoundError(f"会话日志不存在: {session_file}")
+
+        with session_file.open("r", encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    payload = json.loads(line)
+                except json.JSONDecodeError as exc:
+                    raise ValueError(f"会话日志格式错误: {session_file}") from exc
+
+                meta = payload.get("meta")
+                if meta is not None:
+                    return meta
+
+        raise ValueError("会话日志缺少元信息记录")
+
     def _build_meta(self, meta: Dict[str, Any]) -> Dict[str, Any]:
         """Merge default metadata with the supplied payload."""
         merged = {
@@ -97,6 +185,7 @@ class SessionLogger:
             "book_introduction": meta.get("book_introduction", ""),
             "section_id": meta.get("section_id", ""),
             "section_content": meta.get("section_content", ""),
+            "summary": meta.get("summary", ""),
             "start_time": meta.get("start_time", _utc_timestamp()),
             "version": meta.get("version", self._version),
         }
@@ -111,6 +200,7 @@ class SessionLogger:
             "book_introduction": "",
             "section_id": "",
             "section_content": "",
+            "summary": "",
             "start_time": _utc_timestamp(),
             "version": self._version,
         }

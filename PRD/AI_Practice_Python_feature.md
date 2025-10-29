@@ -25,6 +25,7 @@ Response:
     "code":200,
     "message":"success",
     "data":{
+     "summary": "",
      "questions": [
         {
             "questionId": "1",
@@ -62,24 +63,24 @@ POST internal/ai/practice/verify
         {
             "questionId": "1",
             "type": "single_choice",
-            "content": "",
             "answer": "",
         },
         {
             "questionId": "2",
             "type": "short_answer",
-            "content": "",
             "answer": "",   
         },
         {
             "questionId": "3",
             "type": "code",
-            "content": "",
             "answer": "",
         }
     ]
 }
 ```
+
+> 题目内容不再由调用方提交，Python 服务会使用 `sessionId` 和 `userId` 在会话日志中查询最近一次生成的题面，并将题面与用户答案进行比对。
+> Python 服务会在生成题目时自动产出 `summary`，判题阶段会将该摘要注入提示词，以提高判题准确性。
 
 Response:
 ```json
@@ -110,4 +111,3 @@ Response:
     }
 }
 ```
-

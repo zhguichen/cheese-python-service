@@ -52,16 +52,8 @@ class AIService:
 
     async def generate_practice(
         self, request: GeneratePracticeRequest
-    ) -> List[GeneratedQuestion]:
-        """
-        生成练习题
-
-        Args:
-            request: 生成练习题请求
-
-        Returns:
-            生成的题目列表
-        """
+    ) -> AIGeneratedQuestions:
+        """生成练习题与章节总结"""
         context = self._session_context(request.userId, request.sessionId)
         self.session_logger.ensure_meta(context, self._build_generate_meta(request))
         # 构造用户消息
@@ -72,7 +64,7 @@ class AIService:
 章节内容：
 {request.sectionContent}
 
-请根据以上内容生成3道练习题。
+请根据以上内容生成章节总结与出题要点，并据此生成3道练习题。
 """
 
         # 调用 OpenAI API
@@ -99,6 +91,7 @@ class AIService:
             "generate",
             {
                 "latency_ms": latency_ms,
+                "summary": result.summary,
                 "questions": [
                     {
                         "question_id": q.questionId,
@@ -110,7 +103,7 @@ class AIService:
             },
             timestamp=self._now(),
         )
-        return result.questions
+        return result
 
     async def verify_practice(
         self, request: VerifyPracticeRequest
@@ -126,21 +119,62 @@ class AIService:
         """
         context = self._session_context(request.userId, request.sessionId)
         self.session_logger.ensure_meta(context, self._build_verify_meta(request))
+        try:
+            generate_payload = self.session_logger.load_latest_generate_payload(context)
+        except FileNotFoundError as exc:
+            raise ValueError("未找到对应的会话日志，请先生成练习题。") from exc
+        except ValueError as exc:
+            raise ValueError("会话日志中缺少题目信息，请先生成练习题。") from exc
+
+        summary = generate_payload.get("summary", "")
+        generated_questions = generate_payload.get("questions")
+        if not isinstance(generated_questions, list):
+            raise ValueError("会话日志中缺少题目信息，请先生成练习题。")
+
+        question_map = {item.get("question_id"): item for item in generated_questions}
+
+        questions_with_content: List[QuestionWithAnswer] = []
+        for answer in request.questions:
+            question_meta = question_map.get(answer.questionId)
+            if not question_meta:
+                raise ValueError(f"未在日志中找到题目 {answer.questionId}")
+            content = question_meta.get("content")
+            if not content:
+                raise ValueError(
+                    f"题目 {answer.questionId} 缺少题面内容，请重新生成练习题。"
+                )
+            question_type = question_meta.get("type") or answer.type
+            questions_with_content.append(
+                QuestionWithAnswer(
+                    questionId=answer.questionId,
+                    type=question_type,
+                    content=content,
+                    answer=answer.answer,
+                )
+            )
+
         self.session_logger.append_event(
             context,
             "answer",
             {
                 "answers": [
-                    {"question_id": q.questionId, "answer": q.answer}
-                    for q in request.questions
+                    {
+                        "question_id": q.questionId,
+                        "type": q.type,
+                        "answer": q.answer,
+                    }
+                    for q in questions_with_content
                 ]
             },
             timestamp=self._now(),
         )
         # 构造题目和答案的描述
-        questions_text = self._format_questions_for_verification(request.questions)
+        questions_text = self._format_questions_for_verification(questions_with_content)
 
         user_message = f"""
+章节总结与出题要点：
+{summary or "（无摘要信息）"}
+
 请验证以下题目的答案：
 
 {questions_text}
@@ -224,6 +258,7 @@ class AIService:
         return {
             "session_id": request.sessionId,
             "user_id": request.userId,
+            "summary": "",
             "book_name": request.bookName,
             "book_introduction": request.bookIntroduction,
             "section_id": request.sectionId,
@@ -236,6 +271,7 @@ class AIService:
         return {
             "session_id": request.sessionId,
             "user_id": request.userId,
+            "summary": "",
             "book_name": "",
             "book_introduction": "",
             "section_id": request.sectionId,

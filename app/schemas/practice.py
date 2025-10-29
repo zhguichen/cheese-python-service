@@ -47,15 +47,20 @@ class GeneratePracticeResponse(BaseModel):
 class GeneratePracticeData(BaseModel):
     """生成练习题的数据部分"""
 
+    summary: str = Field(..., description="章节总结与出题要点")
     questions: List[GeneratedQuestion] = Field(..., description="生成的题目列表")
 
 
 # ============= 验证答案相关模型 =============
 
 
-class QuestionWithAnswer(QuestionBase):
-    """带答案的题目"""
+class QuestionAnswer(BaseModel):
+    """用户提交的答案"""
 
+    questionId: str = Field(..., description="题目ID")
+    type: Literal["single_choice", "short_answer", "code"] = Field(
+        ..., description="题目类型"
+    )
     answer: str = Field(..., description="用户提交的答案")
 
 
@@ -65,7 +70,13 @@ class VerifyPracticeRequest(BaseModel):
     sessionId: str = Field(..., description="学习会话ID")
     userId: str = Field(..., description="用户ID")
     sectionId: str = Field(..., description="章节ID")
-    questions: List[QuestionWithAnswer] = Field(..., description="待验证的题目列表")
+    questions: List[QuestionAnswer] = Field(..., description="待验证的题目列表")
+
+
+class QuestionWithAnswer(QuestionBase):
+    """带题面内容的答案，用于内部验证流程"""
+
+    answer: str = Field(..., description="用户提交的答案")
 
 
 class VerifiedQuestion(BaseModel):
@@ -99,6 +110,7 @@ class VerifyPracticeData(BaseModel):
 class AIGeneratedQuestions(BaseModel):
     """AI生成的题目列表（用于结构化输出）"""
 
+    summary: str = Field(..., description="章节总结与出题要点")
     questions: List[GeneratedQuestion] = Field(..., description="生成的题目列表")
 
 

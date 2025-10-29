@@ -127,6 +127,7 @@ curl -X POST http://localhost:8001/internal/ai/practice/verify \
   "code": 200,
   "message": "success",
   "data": {
+    "summary": "章节总结与出题要点...",
     "questions": [
       {
         "questionId": "1",
@@ -152,7 +153,7 @@ curl -X POST http://localhost:8001/internal/ai/practice/verify \
 
 **接口**: `POST /internal/ai/practice/verify`
 
-**请求体**:
+**请求体**（题目内容将由服务通过 `sessionId` 从日志中拉取）:
 ```json
 {
   "sessionId": "session_001",
@@ -162,12 +163,14 @@ curl -X POST http://localhost:8001/internal/ai/practice/verify \
     {
       "questionId": "1",
       "type": "single_choice",
-      "content": "题目内容",
       "answer": "用户的答案"
     }
   ]
 }
 ```
+
+> 提交答案时无需传递题目内容，服务会基于 `sessionId` 与 `userId` 在会话日志中定位最近一次生成的题面。
+> 服务在生成题目时会自动写入章节总结 `summary`，验证阶段会将该摘要加入提示词以提升判题准确性。
 
 **响应**:
 ```json
@@ -227,4 +230,3 @@ resp, err := http.Post(
 ## 许可证
 
 内部项目
-

@@ -23,13 +23,16 @@ async def generate_practice(request: GeneratePracticeRequest):
     """
     try:
         # 调用 AI 服务生成题目
-        questions = await ai_service.generate_practice(request)
+        result = await ai_service.generate_practice(request)
 
         # 构造响应
         return GeneratePracticeResponse(
             code=200,
             message="success",
-            data={"questions": [q.model_dump() for q in questions]},
+            data={
+                "summary": result.summary,
+                "questions": [q.model_dump() for q in result.questions],
+            },
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"生成练习题失败: {str(e)}")
@@ -52,5 +55,7 @@ async def verify_practice(request: VerifyPracticeRequest):
             message="success",
             data={"questions": [r.model_dump() for r in results]},
         )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"验证答案失败: {str(e)}")
