@@ -44,15 +44,23 @@ python-service/
 
 ## 快速开始
 
-### 1. 安装依赖
+### 0. 先决条件
 
-确保已激活 conda cheese 环境：
+- 已安装 `uv`
+- 可用的 Python 3.11 解释器（`uv` 会自动下载/管理）
+
+### 1. 安装依赖（使用 uv 管理环境）
+
+项目推荐使用 [uv](https://github.com/astral-sh/uv) 管理虚拟环境和依赖，请先确保已安装 `uv`（macOS 或 Linux 可通过 `curl -LsSf https://astral.sh/uv/install.sh | sh` 安装，Windows 可使用 `powershell -ExecutionPolicy Bypass -c "irm https://astral.sh/uv/install.ps1 | iex"`）。
 
 ```bash
-conda activate cheese
 cd python-service
-pip install -r requirements.txt
+uv venv --python 3.11
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+uv pip install -r requirements.txt
 ```
+
+> 后续需要安装新依赖时，优先使用 `uv pip install 包名`，并同步更新 `requirements.txt`。
 
 ### 2. 配置环境变量
 
@@ -225,7 +233,3 @@ resp, err := http.Post(
 ### AI 服务
 
 `app/services/ai_service.py` 封装了 OpenAI API 调用，使用结构化输出确保返回格式正确。
-
-## 许可证
-
-内部项目
