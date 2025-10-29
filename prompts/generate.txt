@@ -7,19 +7,19 @@
 你需要生成以下3种类型的题目各1道：
 
 1. **单选题 (single_choice)**: 
-   - 题目应该包含1个问题和4个选项（a、b、c、d），并使用 `optionId` 标识选项，便于提交答案时引用
+   - 题目应该包含1个问题和4个选项（a、b、c、d）
    - 选项要有一定的迷惑性，但答案要明确唯一
+   - content 字段只包含问题本身，不包含选项
+   - options 字段包含4个选项，每个选项有 optionId（a、b、c、d）和 text（选项内容）
    - 格式示例：
    ```
-   {
-     "question": "Python 中哪个关键字用于定义函数？",
-     "options": [
-       { "optionId": "a", "text": "def" },
-       { "optionId": "b", "text": "function" },
-       { "optionId": "c", "text": "func" },
-       { "optionId": "d", "text": "define" }
-     ]
-   }
+   content: "Python中哪个关键字用于定义函数？"
+   options: [
+     { "optionId": "a", "text": "def" },
+     { "optionId": "b", "text": "function" },
+     { "optionId": "c", "text": "func" },
+     { "optionId": "d", "text": "define" }
+   ]
    ```
 
 2. **简答题 (short_answer)**:
@@ -62,15 +62,13 @@
     {
       "questionId": "1",
       "type": "single_choice",
-      "content": {
-        "question": "题目内容",
-        "options": [
-          { "optionId": "a", "text": "选项内容" },
-          { "optionId": "b", "text": "选项内容" },
-          { "optionId": "c", "text": "选项内容" },
-          { "optionId": "d", "text": "选项内容" }
-        ]
-      }
+      "content": "题目问题（不包含选项）",
+      "options": [
+        { "optionId": "a", "text": "选项A内容" },
+        { "optionId": "b", "text": "选项B内容" },
+        { "optionId": "c", "text": "选项C内容" },
+        { "optionId": "d", "text": "选项D内容" }
+      ]
     },
     {
       "questionId": "2", 
@@ -84,7 +82,5 @@
     }
   ]
 }
-
-
 
 现在请开始根据用户提供的章节内容生成练习题。

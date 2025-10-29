@@ -31,6 +31,12 @@ Response:
             "questionId": "1",
             "type": "single_choice",
             "content": "",
+            "options": [
+                { "optionId": "a", "text": "选项A内容" },
+                { "optionId": "b", "text": "选项B内容" },
+                { "optionId": "c", "text": "选项C内容" },
+                { "optionId": "d", "text": "选项D内容" }
+            ]
         },
         {
             "questionId": "2",
@@ -92,19 +98,25 @@ Response:
                 "questionId": "1",
                 "type": "single_choice",
                 "isCorrect": true,
-                "parsing": "", //LLM生成的解析
+                "userAnswer": { "selectedOptionId": "b" },
+                "correctAnswer": { "optionId": "b", "text": "正确选项的文本" },
+                "parsing": "LLM生成的解析"
             },
             {
                 "questionId": "2",
                 "type": "short_answer",
                 "isCorrect": true,
-                "parsing": "",
+                "userAnswer": { "answerText": "用户提交的答案文本" },
+                "correctAnswer": { "answerText": "参考答案文本" },
+                "parsing": "LLM生成的解析"
             },
             {
                 "questionId": "3",
                 "type": "code",
                 "isCorrect": true,
-                "parsing": "", 
+                "userAnswer": { "codeText": "用户提交的代码" },
+                "correctAnswer": { "codeText": "参考代码或空字符串" },
+                "parsing": "LLM生成的解析"
             }
         ]
     }

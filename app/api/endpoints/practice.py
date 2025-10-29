@@ -30,7 +30,7 @@ async def generate_practice(request: GeneratePracticeRequest):
             code=200,
             message="success",
             data={
-                "summary": result.summary,
+                # "summary": result.summary,
                 "questions": [q.model_dump() for q in result.questions],
             },
         )

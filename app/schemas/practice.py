@@ -2,7 +2,7 @@
 练习题相关的 Pydantic 数据模型
 """
 
-from typing import List, Literal
+from typing import List, Literal, Optional
 from pydantic import BaseModel, Field
 
 
@@ -20,6 +20,13 @@ class GeneratePracticeRequest(BaseModel):
     sectionContent: str = Field(..., description="章节内容")
 
 
+class Option(BaseModel):
+    """选择题选项模型"""
+
+    optionId: str = Field(..., description="选项ID (a, b, c, d)")
+    text: str = Field(..., description="选项文本内容")
+
+
 class QuestionBase(BaseModel):
     """题目基础模型"""
 
@@ -28,6 +35,9 @@ class QuestionBase(BaseModel):
         ..., description="题目类型"
     )
     content: str = Field(..., description="题目内容")
+    options: Optional[List[Option]] = Field(
+        None, description="选项列表（仅单选题需要）"
+    )
 
 
 class GeneratedQuestion(QuestionBase):
@@ -78,6 +88,43 @@ class QuestionWithAnswer(QuestionBase):
     answer: str = Field(..., description="用户提交的答案")
 
 
+class SingleChoiceUserAnswer(BaseModel):
+    """单选题用户答案"""
+
+    selectedOptionId: str = Field(..., description="用户选择的选项ID")
+
+
+class SingleChoiceCorrectAnswer(BaseModel):
+    """单选题正确答案"""
+
+    optionId: str = Field(..., description="正确选项ID")
+    text: str = Field(..., description="正确选项文本")
+
+
+class TextUserAnswer(BaseModel):
+    """简答题/代码题用户答案"""
+
+    answerText: str = Field(..., description="用户答案文本")
+
+
+class TextCorrectAnswer(BaseModel):
+    """简答题/代码题正确答案"""
+
+    answerText: str = Field(..., description="正确答案文本")
+
+
+class CodeUserAnswer(BaseModel):
+    """代码题用户答案"""
+
+    codeText: str = Field(..., description="用户代码")
+
+
+class CodeCorrectAnswer(BaseModel):
+    """代码题正确答案"""
+
+    codeText: str = Field(..., description="参考代码（可为空）")
+
+
 class VerifiedQuestion(BaseModel):
     """验证后的题目结果"""
 
@@ -86,6 +133,8 @@ class VerifiedQuestion(BaseModel):
         ..., description="题目类型"
     )
     isCorrect: bool = Field(..., description="答案是否正确")
+    userAnswer: dict = Field(..., description="用户答案（格式根据题目类型而定）")
+    correctAnswer: dict = Field(..., description="正确答案（格式根据题目类型而定）")
     parsing: str = Field(..., description="LLM生成的解析")
 
 
@@ -113,7 +162,19 @@ class AIGeneratedQuestions(BaseModel):
     questions: List[GeneratedQuestion] = Field(..., description="生成的题目列表")
 
 
+class AIVerifiedQuestionResult(BaseModel):
+    """AI验证的单个题目结果（不含userAnswer，由LLM生成）"""
+
+    questionId: str = Field(..., description="题目ID")
+    type: Literal["single_choice", "short_answer", "code"] = Field(
+        ..., description="题目类型"
+    )
+    isCorrect: bool = Field(..., description="答案是否正确")
+    correctAnswer: dict = Field(..., description="正确答案（格式根据题目类型而定）")
+    parsing: str = Field(..., description="LLM生成的解析")
+
+
 class AIVerifiedQuestions(BaseModel):
     """AI验证的题目结果列表（用于结构化输出）"""
 
-    questions: List[VerifiedQuestion] = Field(..., description="验证结果列表")
+    questions: List[AIVerifiedQuestionResult] = Field(..., description="验证结果列表")

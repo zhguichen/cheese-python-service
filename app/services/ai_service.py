@@ -16,7 +16,6 @@ from app.schemas.practice import (
     VerifyPracticeRequest,
     AIGeneratedQuestions,
     AIVerifiedQuestions,
-    GeneratedQuestion,
     VerifiedQuestion,
     QuestionWithAnswer,
 )
@@ -97,6 +96,16 @@ class AIService:
                         "question_id": q.questionId,
                         "type": q.type,
                         "content": q.content,
+                        **(
+                            {
+                                "options": [
+                                    {"option_id": opt.optionId, "text": opt.text}
+                                    for opt in q.options
+                                ]
+                            }
+                            if q.options
+                            else {}
+                        ),
                     }
                     for q in result.questions
                 ],
@@ -134,6 +143,7 @@ class AIService:
         question_map = {item.get("question_id"): item for item in generated_questions}
 
         questions_with_content: List[QuestionWithAnswer] = []
+        user_answers_list = []  # 用于存储用户答案
         for answer in request.questions:
             question_meta = question_map.get(answer.questionId)
             if not question_meta:
@@ -144,14 +154,52 @@ class AIService:
                     f"题目 {answer.questionId} 缺少题面内容，请重新生成练习题。"
                 )
             question_type = question_meta.get("type") or answer.type
-            questions_with_content.append(
-                QuestionWithAnswer(
-                    questionId=answer.questionId,
-                    type=question_type,
-                    content=content,
-                    answer=answer.answer,
-                )
+            options = question_meta.get("options")  # 获取选项信息（如果有）
+
+            # 构建 QuestionWithAnswer 对象，包含选项信息
+            question_with_answer = QuestionWithAnswer(
+                questionId=answer.questionId,
+                type=question_type,
+                content=content,
+                answer=answer.answer,
             )
+            # 如果有选项，添加到对象中（用于后续格式化）
+            if options:
+                question_with_answer.options = [
+                    {"optionId": opt.get("option_id"), "text": opt.get("text")}
+                    for opt in options
+                ]
+            questions_with_content.append(question_with_answer)
+
+            # 构建 userAnswer 字段
+            if question_type == "single_choice":
+                user_answers_list.append(
+                    {
+                        "questionId": answer.questionId,
+                        "userAnswer": {"selectedOptionId": answer.answer},
+                    }
+                )
+            elif question_type == "short_answer":
+                user_answers_list.append(
+                    {
+                        "questionId": answer.questionId,
+                        "userAnswer": {"answerText": answer.answer},
+                    }
+                )
+            elif question_type == "code":
+                user_answers_list.append(
+                    {
+                        "questionId": answer.questionId,
+                        "userAnswer": {"codeText": answer.answer},
+                    }
+                )
+            else:
+                user_answers_list.append(
+                    {
+                        "questionId": answer.questionId,
+                        "userAnswer": {"answerText": answer.answer},
+                    }
+                )
 
         self.session_logger.append_event(
             context,
@@ -201,6 +249,27 @@ class AIService:
 
         # 使用 Pydantic 验证
         result = AIVerifiedQuestions.model_validate(json_data)
+
+        # 构建用户答案映射
+        user_answer_map = {
+            item["questionId"]: item["userAnswer"] for item in user_answers_list
+        }
+
+        # 将 userAnswer 添加到每个验证结果中
+        enriched_questions = []
+        for verified_q in result.questions:
+            user_answer = user_answer_map.get(verified_q.questionId, {})
+            enriched_questions.append(
+                VerifiedQuestion(
+                    questionId=verified_q.questionId,
+                    type=verified_q.type,
+                    isCorrect=verified_q.isCorrect,
+                    userAnswer=user_answer,
+                    correctAnswer=verified_q.correctAnswer,
+                    parsing=verified_q.parsing,
+                )
+            )
+
         self.session_logger.append_event(
             context,
             "judge",
@@ -210,14 +279,16 @@ class AIService:
                     {
                         "question_id": r.questionId,
                         "is_correct": r.isCorrect,
+                        "user_answer": user_answer_map.get(r.questionId, {}),
+                        "correct_answer": r.correctAnswer,
                         "parsing": r.parsing,
                     }
-                    for r in result.questions
+                    for r in enriched_questions
                 ],
             },
             timestamp=self._now(),
         )
-        return result.questions
+        return enriched_questions
 
     def _format_questions_for_verification(
         self, questions: List[QuestionWithAnswer]
@@ -239,15 +310,19 @@ class AIService:
                 "code": "代码题",
             }.get(q.type, q.type)
 
-            formatted.append(f"""
-题目 {q.questionId} ({type_name}):
-{q.content}
+            question_text = f"题目 {q.questionId} ({type_name}):\n{q.content}"
 
-用户答案:
-{q.answer}
-""")
+            # 如果是单选题且有选项信息，添加选项
+            if q.type == "single_choice" and hasattr(q, "options") and q.options:
+                question_text += "\n选项："
+                for opt in q.options:
+                    question_text += f"\n  {opt['optionId']}. {opt['text']}"
 
-        return "\n".join(formatted)
+            question_text += f"\n\n用户答案:\n{q.answer}"
+
+            formatted.append(question_text)
+
+        return "\n\n".join(formatted)
 
     def _session_context(self, user_id: str, session_id: str) -> SessionLogContext:
         """Create a session logging context object."""
