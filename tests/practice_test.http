@@ -26,7 +26,6 @@ Content-Type: application/json
 {
   "sessionId": "session_001",
   "userId": "user_001",
-  "sectionId": "section_001",
   "questions": [
     {
       "questionId": "1",
@@ -55,7 +54,6 @@ Content-Type: application/json
 {
   "sessionId": "session_002",
   "userId": "user_002",
-  "sectionId": "section_001",
   "questions": [
     {
       "questionId": "1",

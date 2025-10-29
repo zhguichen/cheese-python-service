@@ -274,7 +274,7 @@ class AIService:
             "summary": "",
             "book_name": "",
             "book_introduction": "",
-            "section_id": request.sectionId,
+            "section_id": "",
             "section_content": "",
             "start_time": self._now(),
         }

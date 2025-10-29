@@ -69,7 +69,6 @@ class VerifyPracticeRequest(BaseModel):
 
     sessionId: str = Field(..., description="学习会话ID")
     userId: str = Field(..., description="用户ID")
-    sectionId: str = Field(..., description="章节ID")
     questions: List[QuestionAnswer] = Field(..., description="待验证的题目列表")
 
 

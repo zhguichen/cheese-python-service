@@ -158,7 +158,6 @@ curl -X POST http://localhost:8001/internal/ai/practice/verify \
 {
   "sessionId": "session_001",
   "userId": "user_001",
-  "sectionId": "section_001",
   "questions": [
     {
       "questionId": "1",

@@ -58,7 +58,6 @@ POST internal/ai/practice/verify
 {
     "sessionId":"",
     "userId":"",
-    "sectionId":"",
     "questions": [
         {
             "questionId": "1",
