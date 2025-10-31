@@ -88,43 +88,6 @@ class QuestionWithAnswer(QuestionBase):
     answer: str = Field(..., description="用户提交的答案")
 
 
-class SingleChoiceUserAnswer(BaseModel):
-    """单选题用户答案"""
-
-    selectedOptionId: str = Field(..., description="用户选择的选项ID")
-
-
-class SingleChoiceCorrectAnswer(BaseModel):
-    """单选题正确答案"""
-
-    optionId: str = Field(..., description="正确选项ID")
-    text: str = Field(..., description="正确选项文本")
-
-
-class TextUserAnswer(BaseModel):
-    """简答题/代码题用户答案"""
-
-    answerText: str = Field(..., description="用户答案文本")
-
-
-class TextCorrectAnswer(BaseModel):
-    """简答题/代码题正确答案"""
-
-    answerText: str = Field(..., description="正确答案文本")
-
-
-class CodeUserAnswer(BaseModel):
-    """代码题用户答案"""
-
-    codeText: str = Field(..., description="用户代码")
-
-
-class CodeCorrectAnswer(BaseModel):
-    """代码题正确答案"""
-
-    codeText: str = Field(..., description="参考代码（可为空）")
-
-
 class VerifiedQuestion(BaseModel):
     """验证后的题目结果"""
 
@@ -133,8 +96,6 @@ class VerifiedQuestion(BaseModel):
         ..., description="题目类型"
     )
     isCorrect: bool = Field(..., description="答案是否正确")
-    userAnswer: dict = Field(..., description="用户答案（格式根据题目类型而定）")
-    correctAnswer: dict = Field(..., description="正确答案（格式根据题目类型而定）")
     parsing: str = Field(..., description="LLM生成的解析")
 
 
@@ -170,7 +131,6 @@ class AIVerifiedQuestionResult(BaseModel):
         ..., description="题目类型"
     )
     isCorrect: bool = Field(..., description="答案是否正确")
-    correctAnswer: dict = Field(..., description="正确答案（格式根据题目类型而定）")
     parsing: str = Field(..., description="LLM生成的解析")
 
 

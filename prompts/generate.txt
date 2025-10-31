@@ -7,18 +7,19 @@
 你需要生成以下3种类型的题目各1道：
 
 1. **单选题 (single_choice)**: 
-   - 题目应该包含1个问题和4个选项（a、b、c、d）
+   - 题目应该包含1个问题和4个选项（A、B、C、D）
+   - 选项需大写
    - 选项要有一定的迷惑性，但答案要明确唯一
    - content 字段只包含问题本身，不包含选项
-   - options 字段包含4个选项，每个选项有 optionId（a、b、c、d）和 text（选项内容）
+   - options 字段包含4个选项，每个选项有 optionId（A、B、C、D）和 text（选项内容）
    - 格式示例：
    ```
    content: "Python中哪个关键字用于定义函数？"
    options: [
-     { "optionId": "a", "text": "def" },
-     { "optionId": "b", "text": "function" },
-     { "optionId": "c", "text": "func" },
-     { "optionId": "d", "text": "define" }
+     { "optionId": "A", "text": "def" },
+     { "optionId": "B", "text": "function" },
+     { "optionId": "C", "text": "func" },
+     { "optionId": "D", "text": "define" }
    ]
    ```
 

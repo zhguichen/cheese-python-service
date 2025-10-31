@@ -32,10 +32,10 @@ Response:
             "type": "single_choice",
             "content": "",
             "options": [
-                { "optionId": "a", "text": "选项A内容" },
-                { "optionId": "b", "text": "选项B内容" },
-                { "optionId": "c", "text": "选项C内容" },
-                { "optionId": "d", "text": "选项D内容" }
+                { "optionId": "A", "text": "选项A内容" },
+                { "optionId": "B", "text": "选项B内容" },
+                { "optionId": "C", "text": "选项C内容" },
+                { "optionId": "D", "text": "选项D内容" }
             ]
         },
         {
@@ -98,25 +98,19 @@ Response:
                 "questionId": "1",
                 "type": "single_choice",
                 "isCorrect": true,
-                "userAnswer": { "selectedOptionId": "b" },
-                "correctAnswer": { "optionId": "b", "text": "正确选项的文本" },
-                "parsing": "LLM生成的解析"
+                "parsing": "LLM生成的解析（包含正确答案说明）"
             },
             {
                 "questionId": "2",
                 "type": "short_answer",
                 "isCorrect": true,
-                "userAnswer": { "answerText": "用户提交的答案文本" },
-                "correctAnswer": { "answerText": "参考答案文本" },
-                "parsing": "LLM生成的解析"
+                "parsing": "LLM生成的解析（包含参考答案）"
             },
             {
                 "questionId": "3",
                 "type": "code",
                 "isCorrect": true,
-                "userAnswer": { "codeText": "用户提交的代码" },
-                "correctAnswer": { "codeText": "参考代码或空字符串" },
-                "parsing": "LLM生成的解析"
+                "parsing": "LLM生成的解析（包含参考代码或实现思路）"
             }
         ]
     }

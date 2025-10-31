@@ -143,7 +143,6 @@ class AIService:
         question_map = {item.get("question_id"): item for item in generated_questions}
 
         questions_with_content: List[QuestionWithAnswer] = []
-        user_answers_list = []  # 用于存储用户答案
         for answer in request.questions:
             question_meta = question_map.get(answer.questionId)
             if not question_meta:
@@ -170,36 +169,6 @@ class AIService:
                     for opt in options
                 ]
             questions_with_content.append(question_with_answer)
-
-            # 构建 userAnswer 字段
-            if question_type == "single_choice":
-                user_answers_list.append(
-                    {
-                        "questionId": answer.questionId,
-                        "userAnswer": {"selectedOptionId": answer.answer},
-                    }
-                )
-            elif question_type == "short_answer":
-                user_answers_list.append(
-                    {
-                        "questionId": answer.questionId,
-                        "userAnswer": {"answerText": answer.answer},
-                    }
-                )
-            elif question_type == "code":
-                user_answers_list.append(
-                    {
-                        "questionId": answer.questionId,
-                        "userAnswer": {"codeText": answer.answer},
-                    }
-                )
-            else:
-                user_answers_list.append(
-                    {
-                        "questionId": answer.questionId,
-                        "userAnswer": {"answerText": answer.answer},
-                    }
-                )
 
         self.session_logger.append_event(
             context,
@@ -250,22 +219,14 @@ class AIService:
         # 使用 Pydantic 验证
         result = AIVerifiedQuestions.model_validate(json_data)
 
-        # 构建用户答案映射
-        user_answer_map = {
-            item["questionId"]: item["userAnswer"] for item in user_answers_list
-        }
-
-        # 将 userAnswer 添加到每个验证结果中
+        # 直接使用 LLM 返回的结果，不再添加 userAnswer
         enriched_questions = []
         for verified_q in result.questions:
-            user_answer = user_answer_map.get(verified_q.questionId, {})
             enriched_questions.append(
                 VerifiedQuestion(
                     questionId=verified_q.questionId,
                     type=verified_q.type,
                     isCorrect=verified_q.isCorrect,
-                    userAnswer=user_answer,
-                    correctAnswer=verified_q.correctAnswer,
                     parsing=verified_q.parsing,
                 )
             )
@@ -279,8 +240,6 @@ class AIService:
                     {
                         "question_id": r.questionId,
                         "is_correct": r.isCorrect,
-                        "user_answer": user_answer_map.get(r.questionId, {}),
-                        "correct_answer": r.correctAnswer,
                         "parsing": r.parsing,
                     }
                     for r in enriched_questions

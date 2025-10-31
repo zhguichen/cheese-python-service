@@ -1,4 +1,4 @@
-# 📘 AI 练一练日志记录需求文档（JSONL 格式）
+#  AI 练一练日志记录需求文档（JSONL 格式）
 
 ## 一、日志目标
 
@@ -9,8 +9,6 @@ AI 练一练模块的日志用于追踪 **出题 → 答题 → 判题** 的完�
 * 用户答题行为分析
 * 模型判题准确率与响应延迟分析
 * 结果可重现与溯源
-
-日志只以文件形式存储（JSON Lines），**不入数据库**，具备高可读性与机器可解析性。
 
 ---
 
@@ -108,11 +106,18 @@ logs/
   "timestamp": "2025-10-29T18:03:00+08:00",
   "data": {
     "latency_ms": 3150,
+    "summary": "在Python中，变量用于存储数据。变量名可以由字母、数字和下划线组成……",
     "questions": [
       {
         "question_id": "1",
         "type": "single_choice",
-        "content": "Python中用于定义函数的关键字是？"
+        "content": "在python中，哪个关键字用于定义函数？",
+        "options": [
+          { "optionId": "A", "text": "def" },
+          { "optionId": "B", "text": "function" },
+          { "optionId": "C", "text": "func" },
+          { "optionId": "D", "text": "define" }
+        ]
       },
       {
         "question_id": "2",
@@ -136,8 +141,8 @@ logs/
   "timestamp": "2025-10-29T18:07:11+08:00",
   "data": {
     "answers": [
-      {"question_id": "1", "answer": "def"},
-      {"question_id": "2", "answer": "通过缩进区分代码块"}
+      {"question_id": "1", "type": "single_choice", "answer": ""},
+      {"question_id": "2", "type": "short_answer", "answer": "通过缩进区分代码块"}
     ]
   }
 }
